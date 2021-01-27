@@ -47,8 +47,9 @@ NAVIGATION::MAP_RETURN_STATUS NAVIGATION_OccupancyGridMapServerSVC_impl::request
   retmap->cells.length(img.cols * img.rows);
   for(int h = 0;h < img.rows;h++) {
     for(int w = 0;w < img.cols;w++) {
-      retmap->cells[h * img.cols + w] = img.at<uchar>(h, w, 0);
-    }
+//      retmap->cells[h * img.cols + w] = img.at<uchar>(h, w, 0);
+		retmap->cells[h * img.cols + w] = img.data[h * img.cols + w];
+	}
   }
   map = retmap._retn();
   
