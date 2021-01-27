@@ -1,0 +1,16 @@
+# Image File Name
+image : success_map.png
+# Configuration
+config : 
+# Resolution of Map. Length of 1 px in meter.
+  xScale : 0.05000000074505806
+  yScale : 0.05000000074505806
+# Pose from the Top-Left point in meter and radian
+# X-Axis is horizontally, left to right.
+# Y-Axis is vertically, bottom to top.
+  origin_x : 16.950000252574682
+  origin_y : -32.95000049099326
+  origin_th : 0.0
+# If multiple Map is used, row and column must be set.
+  row : 0
+  column : 0
