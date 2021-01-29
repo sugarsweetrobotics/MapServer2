@@ -29,27 +29,65 @@ NAVIGATION::MAP_RETURN_STATUS NAVIGATION_OccupancyGridMapServerSVC_impl::request
 {
   std::cout << "requestLocalMap" << std::endl;
   NAVIGATION::OccupancyGridMap_var retmap(new NAVIGATION::OccupancyGridMap());
-  auto& img = m_pRTC->m_mapImg;
+  auto& img = m_pRTC->m_mapImg; // cv::Mat
   auto& cnf = m_pRTC->m_mapConfig;
-  retmap->config.globalPositionOfTopLeft.position.x = cnf.config.origin_x;
-  retmap->config.globalPositionOfTopLeft.position.y = cnf.config.origin_y;
-  retmap->config.globalPositionOfTopLeft.heading = 0;
-  retmap->config.sizeOfGrid.l = cnf.config.yScale;
-  retmap->config.sizeOfGrid.w = cnf.config.xScale;
-  retmap->config.sizeOfMap.l = cnf.config.yScale * img.rows;
-  retmap->config.sizeOfMap.w = cnf.config.xScale * img.cols;
 
-  std::cout << "map(" << img.cols << " x " << img.rows << ")" << std::endl;
+  auto retMapCnf = cnf;
+  cv::Mat retMap;
+
+  if (param.sizeOfMap.w <= 0 || param.sizeOfMap.l <= 0) {
+    img.copyTo(retMap);
+  } else {
+    // if (param.sizeOfMap.w > 0 || param.sizeOfMap.l > 0) {
+    
+    int retMapWidthPx = param.sizeOfMap.w / param.sizeOfGrid.w;
+    int retMapHeightPx = param.sizeOfMap.l / param.sizeOfGrid.l;
+    
+    int originXOfWholeMapPx = +cnf.config.origin_x / cnf.config.xScale;
+    int originYOfWholeMapPx = -cnf.config.origin_y / cnf.config.yScale;
+    int retMapCenterXOnWholeMapPx = param.globalPositionOfCenter.position.x / cnf.config.xScale + originXOfWholeMapPx;
+    int retMapCenterYOnWholeMapPx = -param.globalPositionOfCenter.position.y / cnf.config.yScale + originYOfWholeMapPx;
+    int retMapWidthOnWholeMapPx = param.sizeOfMap.w / cnf.config.xScale;
+    int retMapHeightOnWholeMapPx = param.sizeOfMap.l / cnf.config.yScale;
+    auto tmpMap = cv::Mat(img, cv::Rect((retMapCenterXOnWholeMapPx - retMapWidthOnWholeMapPx/2),
+					(retMapCenterYOnWholeMapPx - retMapHeightOnWholeMapPx/2),
+					retMapWidthOnWholeMapPx, retMapHeightOnWholeMapPx));
+    
+    tmpMap.copyTo(retMap);
+    std::cout << "rect:" << (retMapCenterXOnWholeMapPx - retMapWidthOnWholeMapPx/2)
+	      << ", " << (retMapCenterYOnWholeMapPx - retMapHeightOnWholeMapPx/2)
+	      << ", " << retMapWidthOnWholeMapPx << ", " <<  retMapHeightOnWholeMapPx
+	      << std::endl;
+    retMapCnf.config.origin_x = -(param.globalPositionOfCenter.position.x - param.sizeOfMap.w/2);
+    retMapCnf.config.origin_y = -(param.globalPositionOfCenter.position.y - param.sizeOfMap.l/2);
+  }
+  
+  retmap->config.globalPositionOfTopLeft.position.x = retMapCnf.config.origin_x;
+  retmap->config.globalPositionOfTopLeft.position.y = retMapCnf.config.origin_y;
+  retmap->config.globalPositionOfTopLeft.heading = 0;
+  retmap->config.sizeOfGrid.l = retMapCnf.config.yScale;
+  retmap->config.sizeOfGrid.w = retMapCnf.config.xScale;
+  retmap->config.sizeOfMap.l = retMapCnf.config.yScale * retMap.rows;
+  retmap->config.sizeOfMap.w = retMapCnf.config.xScale * retMap.cols;
+  /*
+  retmap->config.globalPositionOfTopLeft.position.x = retMapCnf.config.origin_x;
+  retmap->config.globalPositionOfTopLeft.position.y = retMapCnf.config.origin_y;
+  retmap->config.globalPositionOfTopLeft.heading = 0;
+  retmap->config.sizeOfGrid.l = retMapCnf.config.yScale;
+  retmap->config.sizeOfGrid.w = retMapCnf.config.xScale;
+  retmap->config.sizeOfMap.l = retMapCnf.config.yScale * img.rows;
+  retmap->config.sizeOfMap.w = retMapCnf.config.xScale * img.cols;
+  */
+  std::cout << "map(" << retMap.cols << " x " << retMap.rows << ")" << std::endl;
   std::cout << "config.sizeOfMap.l: " << retmap->config.sizeOfMap.l << std::endl;
   std::cout << "config.sizeOfMap.w: " << retmap->config.sizeOfMap.w << std::endl;
   std::cout << "config.sizeOfGrid.l: " << retmap->config.sizeOfGrid.l << std::endl;
   std::cout << "config.sizeOfGrid.w: " << retmap->config.sizeOfGrid.w << std::endl;
-  retmap->cells.length(img.cols * img.rows);
-  for(int h = 0;h < img.rows;h++) {
-    for(int w = 0;w < img.cols;w++) {
-//      retmap->cells[h * img.cols + w] = img.at<uchar>(h, w, 0);
-		retmap->cells[h * img.cols + w] = img.data[h * img.cols + w];
-	}
+  retmap->cells.length(retMap.cols * retMap.rows);
+  for(int h = 0;h < retMap.rows;h++) {
+    for(int w = 0;w < retMap.cols;w++) {
+      retmap->cells[h * retMap.cols + w] = retMap.data[h * retMap.cols + w];
+    }
   }
   map = retmap._retn();
   
