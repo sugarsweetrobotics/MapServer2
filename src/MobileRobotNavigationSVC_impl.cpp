@@ -43,8 +43,8 @@ NAVIGATION::MAP_RETURN_STATUS NAVIGATION_OccupancyGridMapServerSVC_impl::request
     int retMapWidthPx = param.sizeOfMap.w / param.sizeOfGrid.w;
     int retMapHeightPx = param.sizeOfMap.l / param.sizeOfGrid.l;
     
-    int originXOfWholeMapPx = +cnf.config.origin_x / cnf.config.xScale;
-    int originYOfWholeMapPx = -cnf.config.origin_y / cnf.config.yScale;
+    int originXOfWholeMapPx = -cnf.config.origin_x / cnf.config.xScale;
+    int originYOfWholeMapPx = +cnf.config.origin_y / cnf.config.yScale;
     int retMapCenterXOnWholeMapPx = param.globalPositionOfCenter.position.x / cnf.config.xScale + originXOfWholeMapPx;
     int retMapCenterYOnWholeMapPx = -param.globalPositionOfCenter.position.y / cnf.config.yScale + originYOfWholeMapPx;
     int retMapWidthOnWholeMapPx = param.sizeOfMap.w / cnf.config.xScale;
@@ -58,8 +58,8 @@ NAVIGATION::MAP_RETURN_STATUS NAVIGATION_OccupancyGridMapServerSVC_impl::request
 	      << ", " << (retMapCenterYOnWholeMapPx - retMapHeightOnWholeMapPx/2)
 	      << ", " << retMapWidthOnWholeMapPx << ", " <<  retMapHeightOnWholeMapPx
 	      << std::endl;
-    retMapCnf.config.origin_x = -(param.globalPositionOfCenter.position.x - param.sizeOfMap.w/2);
-    retMapCnf.config.origin_y = -(param.globalPositionOfCenter.position.y - param.sizeOfMap.l/2);
+    retMapCnf.config.origin_x = (param.globalPositionOfCenter.position.x - param.sizeOfMap.w/2);
+    retMapCnf.config.origin_y = (param.globalPositionOfCenter.position.y - param.sizeOfMap.l/2);
   }
   
   retmap->config.globalPositionOfTopLeft.position.x = retMapCnf.config.origin_x;

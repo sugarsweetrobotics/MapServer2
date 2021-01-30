@@ -194,6 +194,14 @@ RTC::ReturnCode_t MapServer::onActivated(RTC::UniqueId ec_id)
   std::string line;
   int lineNumber = 0;
   bool configContext = false;
+
+  std::map<std::string, bool> requiredMap;
+  requiredMap["xScale"] = false;
+  requiredMap["yScale"] = false;
+  requiredMap["origin_x"] = false;
+  requiredMap["origin_y"] = false;
+  requiredMap["row"] = false;
+  requiredMap["column"] = false;
   while (std::getline(fin, line)) {
     //    std::cout << "line is " << line << std::endl;
     lineNumber++;
@@ -228,24 +236,39 @@ RTC::ReturnCode_t MapServer::onActivated(RTC::UniqueId ec_id)
     //    std::cout << "config: " << std::endl;
     if (key == "xScale") {
       m_mapConfig.config.xScale = atof(value.c_str());
+      requiredMap["xScale"] = true;
     } else if (key == "yScale") {
       m_mapConfig.config.yScale = atof(value.c_str());
+      requiredMap["yScale"] = true;      
     } else if (key == "origin_x") {
-      m_mapConfig.config.origin_x = atof(value.c_str());
+      m_mapConfig.config.origin_x = -atof(value.c_str());
+      requiredMap["origin_x"] = true;      
     } else if (key == "origin_y") {
-      m_mapConfig.config.origin_y = atof(value.c_str());
+      m_mapConfig.config.origin_y = -atof(value.c_str());
+      requiredMap["origin_y"] = true;            
     } else if (key == "origin_th") {
       m_mapConfig.config.origin_th = atof(value.c_str());
     } else if (key == "row") {
       m_mapConfig.config.row = atoi(value.c_str());
+      requiredMap["row"] = true;            
     } else if (key == "column") {
       m_mapConfig.config.column = atoi(value.c_str());
+      requiredMap["column"] = true;                  
     } else {
       std::cout << "E2: Invalid Config File (filename is " << m_map_file_name + ".yaml)" << std::endl;
       std::cout << "Line "<< lineNumber << " detect invalid key : " << key << std::endl;
       return RTC::RTC_ERROR;
     }
+
   }
+
+    for(auto& p : requiredMap) {
+      if (p.second == false) {
+	std::cout << "Loading Config File failed. Required Field ('" << p.first << "' is not loaded." << std::endl;
+	return RTC::RTC_ERROR;
+      }
+    }
+  
   return RTC::RTC_OK;
 }
 
