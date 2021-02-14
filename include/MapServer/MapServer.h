@@ -16,7 +16,7 @@
 
 // Service implementation headers
 // <rtc-template block="service_impl_h">
-#include "MobileRobotNavigationSVC_impl.h"
+#include "MapServerSVC_impl.h"
 
 // </rtc-template>
 
@@ -30,7 +30,6 @@
 #include <rtm/CorbaPort.h>
 #include <rtm/DataInPort.h>
 #include <rtm/DataOutPort.h>
-
 
 #include <opencv2/opencv.hpp>
 
@@ -48,6 +47,8 @@ struct MapConfig {
   std::string image;
   Config config;
 };
+
+
 /*!
  * @class MapServer
  * @brief Map Server RT component

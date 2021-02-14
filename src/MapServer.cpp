@@ -9,10 +9,6 @@
 
 #include "MapServer.h"
 
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/core/core.hpp>
-
 // Module specification
 // <rtc-template block="module_spec">
 static const char* mapserver_spec[] =
@@ -20,7 +16,7 @@ static const char* mapserver_spec[] =
     "implementation_id", "MapServer",
     "type_name",         "MapServer",
     "description",       "Map Server RT component",
-    "version",           "1.0.0",
+    "version",           "1.1.0",
     "vendor",            "Sugar Sweet Robotics",
     "category",          "Navigation",
     "activity_type",     "PERIODIC",
@@ -60,56 +56,6 @@ MapServer::MapServer(RTC::Manager* manager)
 MapServer::~MapServer()
 {
 }
-
-
-
-RTC::ReturnCode_t MapServer::onInitialize()
-{
-  // Registration: InPort/OutPort/Service
-  // <rtc-template block="registration">
-  // Set InPort buffers
-
-  // Set OutPort buffer
-
-  // Set service provider to Ports
-  m_mapServerPort.registerProvider("NAVIGATION_OccupancyGridMapServer", "NAVIGATION::OccupancyGridMapServer", m_NAVIGATION_OccupancyGridMapServer);
-
-  // Set service consumers to Ports
-
-  // Set CORBA Service Ports
-  addPort(m_mapServerPort);
-
-  m_NAVIGATION_OccupancyGridMapServer.setRTC(this);
-  // </rtc-template>
-
-  // <rtc-template block="bind_config">
-  // Bind variables and configuration variable
-  bindParameter("map_file_name", m_map_file_name, "map_file_name");
-  // </rtc-template>
-
-  return RTC::RTC_OK;
-}
-
-/*
-RTC::ReturnCode_t MapServer::onFinalize()
-{
-  return RTC::RTC_OK;
-}
-*/
-
-/*
-RTC::ReturnCode_t MapServer::onStartup(RTC::UniqueId ec_id)
-{
-  return RTC::RTC_OK;
-}
-*/
-
-/*
-RTC::ReturnCode_t MapServer::onShutdown(RTC::UniqueId ec_id)
-{
-  return RTC::RTC_OK;
-}
-*/
 
 
 namespace {
@@ -165,15 +111,67 @@ namespace {
   
 }
 
+
+RTC::ReturnCode_t MapServer::onInitialize()
+{
+  // Registration: InPort/OutPort/Service
+  // <rtc-template block="registration">
+  // Set InPort buffers
+
+  // Set OutPort buffer
+
+  // Set service provider to Ports
+  m_mapServerPort.registerProvider("NAVIGATION_OccupancyGridMapServer", "NAVIGATION::OccupancyGridMapServer", m_NAVIGATION_OccupancyGridMapServer);
+
+  // Set service consumers to Ports
+
+  // Set CORBA Service Ports
+  addPort(m_mapServerPort);
+
+  m_NAVIGATION_OccupancyGridMapServer.setRTC(this);
+  // </rtc-template>
+
+  // <rtc-template block="bind_config">
+  // Bind variables and configuration variable
+  bindParameter("map_file_name", m_map_file_name, "map_file_name");
+  // </rtc-template>
+
+  return RTC::RTC_OK;
+}
+
+/*
+RTC::ReturnCode_t MapServer::onFinalize()
+{
+  return RTC::RTC_OK;
+}
+*/
+
+/*
+RTC::ReturnCode_t MapServer::onStartup(RTC::UniqueId ec_id)
+{
+  return RTC::RTC_OK;
+}
+*/
+
+/*
+RTC::ReturnCode_t MapServer::onShutdown(RTC::UniqueId ec_id)
+{
+  return RTC::RTC_OK;
+}
+*/
+
+
 RTC::ReturnCode_t MapServer::onActivated(RTC::UniqueId ec_id)
 {
-  
+  std::cout << "[MapServer] onActivated(" << ec_id << ") called." << std::endl;
+  std::cout << "[MapServer] Opening map file (" << m_map_file_name << ".png)" << std::endl;
   auto img = cv::imread( m_map_file_name + ".png", 1);
   cv::imwrite("hoge.png", img);
-  //if (!m_mapImg.data ) {
-  //RTC_ERROR(("Reading Map Data (filename = %s) failed.", m_map_file_name.c_str()));
-  //return RTC::RTC_ERROR;
-  //}
+  if (!img.data ) {
+    RTC_ERROR(("[MapServer] Reading Map Data (filename = %s) failed.", m_map_file_name.c_str()));
+    return RTC::RTC_ERROR;
+  }
+  std::cout << "[MapServer] Opening Map file success." << std::endl;
 
   auto typ = img.type();
   auto depth = typ & CV_MAT_DEPTH_MASK;
@@ -186,6 +184,7 @@ RTC::ReturnCode_t MapServer::onActivated(RTC::UniqueId ec_id)
     m_mapImg = img;
   }
 
+  std::cout << "[MapServer] Opening config file (" << m_map_file_name << ".yaml)" << std::endl;
   std::ifstream fin(m_map_file_name + ".yaml");
   if (fin.fail()) {
     std::cout << "[MapServer] Error reading yaml file" << std::endl;
@@ -268,6 +267,8 @@ RTC::ReturnCode_t MapServer::onActivated(RTC::UniqueId ec_id)
 	return RTC::RTC_ERROR;
       }
     }
+  
+  
   
   return RTC::RTC_OK;
 }

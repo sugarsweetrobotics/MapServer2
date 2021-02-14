@@ -1,4 +1,4 @@
-set(comp_srcs MapServer.cpp MobileRobotNavigationSVC_impl.cpp )
+set(comp_srcs MapServer.cpp MapServerSVC_impl.cpp )
 set(standalone_srcs MapServerComp.cpp)
 
 find_package(OpenCV REQUIRED)

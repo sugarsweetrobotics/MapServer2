@@ -16,7 +16,7 @@ static const char* mapserver_spec[] =
     "implementation_id", "MapServerTest",
     "type_name",         "MapServerTest",
     "description",       "Map Server RT component",
-    "version",           "1.0.0",
+    "version",           "1.1.0",
     "vendor",            "Sugar Sweet Robotics",
     "category",          "Navigation",
     "activity_type",     "PERIODIC",

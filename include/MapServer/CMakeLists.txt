@@ -1,4 +1,4 @@
 set(hdrs MapServer.h
-    MobileRobotNavigationSVC_impl.h
+    MapServerSVC_impl.h
     PARENT_SCOPE
     )

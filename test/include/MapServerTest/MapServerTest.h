@@ -21,7 +21,7 @@
 
 // Service Consumer stub headers
 // <rtc-template block="consumer_stub_h">
-#include "MobileRobotNavigationStub.h"
+#include "MapServerStub.h"
 
 // </rtc-template>
 
