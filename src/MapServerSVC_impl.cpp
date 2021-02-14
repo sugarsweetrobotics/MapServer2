@@ -35,6 +35,17 @@ NAVIGATION::MAP_RETURN_STATUS NAVIGATION_OccupancyGridMapServerSVC_impl::updateL
   return NAVIGATION::MAP_NG_NOTIMPL;
 }
 
+/*
+ * Methods corresponding to IDL attributes and operations
+ */
+NAVIGATION::MAP_RETURN_STATUS NAVIGATION_OccupancyGridMapServerSVC_impl::updateWholeMap(const NAVIGATION::OccupancyGridMapRequestParam& param, const NAVIGATION::OccupancyGridMap& map)
+{
+  // Please insert your code here and remove the following warning pragma
+
+  return NAVIGATION::MAP_NG_NOTIMPL;
+}
+
+
 NAVIGATION::MAP_RETURN_STATUS NAVIGATION_OccupancyGridMapServerSVC_impl::requestLocalMap(const NAVIGATION::OccupancyGridMapRequestParam& param, NAVIGATION::OccupancyGridMap_out map)
 {
   std::cout << "[MapServer] NAVIGATION_OccupancyGridMapServerSVC_impl::requestLocalMap called." << std::endl;

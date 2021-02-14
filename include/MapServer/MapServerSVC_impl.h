@@ -43,6 +43,7 @@ public:
 
    // attributes and operations
    NAVIGATION::MAP_RETURN_STATUS updateLocalMap(const NAVIGATION::OccupancyGridMapRequestParam& param, const NAVIGATION::OccupancyGridMap& map);
+   NAVIGATION::MAP_RETURN_STATUS updateWholeMap(const NAVIGATION::OccupancyGridMapRequestParam& param, const NAVIGATION::OccupancyGridMap& map);
    NAVIGATION::MAP_RETURN_STATUS requestLocalMap(const NAVIGATION::OccupancyGridMapRequestParam& param, NAVIGATION::OccupancyGridMap_out map);
    NAVIGATION::MAP_RETURN_STATUS getWholeMapConig(NAVIGATION::OccupancyGridMapConfig& config);
 
